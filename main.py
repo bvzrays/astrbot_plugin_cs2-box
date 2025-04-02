@@ -16,16 +16,18 @@ logger = logging.getLogger("CS2BoxPlugin")
     "1.0.0",  # 版本号
     "https://github.com/bvzrays/astrbot_plugin_cs2-box"  # 仓库URL
 )
+class CS2BoxPlugin(Star):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        
+        # 获取插件所在目录
+        self.PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
+        self.USER_DATA_DIR = os.path.join(self.PLUGIN_DIR, "user_data")
+        os.makedirs(self.USER_DATA_DIR, exist_ok=True)
 
-
-
-# 获取插件所在目录
-PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-USER_DATA_DIR = os.path.join(PLUGIN_DIR, "user_data")
-os.makedirs(USER_DATA_DIR, exist_ok=True)
 
 # 武器箱数据结构
-WEAPON_CASES = {
+    self.WEAPON_CASES = {
     "千瓦武器箱": {
         "保密": [
             {"name": "AK-47 | 传承", "price": 1280.59},
@@ -298,7 +300,7 @@ WEAPON_CASES = {
 }
 
 # 品质概率分布（工业级、军规级、受限、保密、特殊物品）
-RARITY_PROBS = [
+self.RARITY_PROBS = [
     ("工业级", 79.923),
     ("军规级", 15.985),
     ("受限", 3.197),
@@ -306,11 +308,11 @@ RARITY_PROBS = [
     ("特殊物品", 0.256)
 ]
 
-def get_today():
-    """获取上海时区当日日期"""
-    utc_now = datetime.utcnow()
-    shanghai_time = utc_now + timedelta(hours=8)
-    return shanghai_time.date().isoformat()
+ def get_today(self):
+        """获取上海时区当日日期"""
+        utc_now = datetime.utcnow()
+        shanghai_time = utc_now + timedelta(hours=8)
+        return shanghai_time.date().isoformat()
 
 def _get_group_id(event: AstrMessageEvent) -> str:
     """获取有效的群组标识"""
