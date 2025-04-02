@@ -1,4 +1,4 @@
-# 【仅QQ】CSGO 开箱模拟器 - AstrBot 插件 ⚠️正在测试！不要下载！
+# 【仅QQ】CSGO 开箱模拟器 - AstrBot 插件
 
 ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
