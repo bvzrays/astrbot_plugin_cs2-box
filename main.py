@@ -7,6 +7,14 @@ import random
 from datetime import datetime, timedelta
 from typing import Dict, List
 
+@register(
+    "astrbot_plugin_cs2-box",  # 插件ID/名称
+    "BvzRays",  # 作者
+    "CS2开箱模拟系统",  # 描述
+    "1.0.0",  # 版本号
+    "https://github.com/bvzrays/astrbot_plugin_cs2-box"  # 仓库URL
+)
+
 logger = logging.getLogger("CS2BoxPlugin")
 
 # 获取插件所在目录
@@ -367,11 +375,6 @@ def _add_gold_info(message: str, gold: int) -> str:
     """在消息末尾添加金币信息"""
     return f"{message}\n当前金币：{gold}"
 
-@register("CS2BoxPlugin", "Kimi", "CS2开箱模拟系统", "1.0.0")
-class CS2BoxPlugin(Star):
-    def __init__(self, context: Context):
-        super().__init__(context)
-        logger.info("CS2开箱插件已加载")
 
     @command("签到")
     async def check_in(self, event: AstrMessageEvent):
