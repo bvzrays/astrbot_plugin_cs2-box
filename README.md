@@ -43,6 +43,7 @@
 
 
 ## 贡献
+一作：deepseek
 
 欢迎提交 Issue 或 Pull Request 来改进本项目！
 
