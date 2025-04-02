@@ -10,11 +10,11 @@ from typing import Dict, List
 logger = logging.getLogger("CS2BoxPlugin")
 
 @register(
-    "astrbot_plugin_cs2-box",  # 插件ID/名称
-    "BvzRays",  # 作者
-    "CS2开箱模拟系统",  # 描述
-    "1.0.0",  # 版本号
-    "https://github.com/bvzrays/astrbot_plugin_cs2-box"  # 仓库URL
+    "astrbot_plugin_cs2-box",
+    "BvzRays",
+    "CS2开箱模拟系统",
+    "1.0.0",
+    "https://github.com/bvzrays/astrbot_plugin_cs2-box"
 )
 class CS2BoxPlugin(Star):
     def __init__(self, context: Context):
@@ -376,20 +376,23 @@ class CS2BoxPlugin(Star):
         """在消息末尾添加金币信息"""
         return f"{message}\n当前金币：{gold}"
 
-    @command("签到")
-    async def check_in(self, event: AstrMessageEvent):
+  @command("签到")
+    async def check_in(self, event: AstrMessageEvent, *args, **kwargs):
         """每日签到"""
-        user_data = self._load_user_data(event)
-        
-        today = self.get_today()
-        if user_data["last_checkin"] == today:
-            yield event.plain_result(self._add_gold_info("⚠️ 今天已经签到过了，请明天再来", user_data["gold"]))
-            return
-        
-        user_data["gold"] += 100
-        user_data["last_checkin"] = today
-        self._save_user_data(event, user_data)
-        yield event.plain_result(self._add_gold_info("🎉 签到成功！获得100金币", user_data["gold"]))
+        try:
+            user_data = self._load_user_data(event)
+            
+            today = self.get_today()
+            if user_data["last_checkin"] == today:
+                return event.plain_result(self._add_gold_info("⚠️ 今天已经签到过了，请明天再来", user_data["gold"]))
+            
+            user_data["gold"] += 100
+            user_data["last_checkin"] = today
+            self._save_user_data(event, user_data)
+            return event.plain_result(self._add_gold_info("🎉 签到成功！获得100金币", user_data["gold"]))
+        except Exception as e:
+            logger.error(f"签到出错: {str(e)}")
+            return event.plain_result("签到处理出现错误")
 
     @command("开箱")
     async def open_case(self, event: AstrMessageEvent, case_name: str = None, count: int = 1):
