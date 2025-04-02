@@ -7,6 +7,8 @@ import random
 from datetime import datetime, timedelta
 from typing import Dict, List
 
+logger = logging.getLogger("CS2BoxPlugin")
+
 @register(
     "astrbot_plugin_cs2-box",  # 插件ID/名称
     "BvzRays",  # 作者
@@ -15,7 +17,7 @@ from typing import Dict, List
     "https://github.com/bvzrays/astrbot_plugin_cs2-box"  # 仓库URL
 )
 
-logger = logging.getLogger("CS2BoxPlugin")
+
 
 # 获取插件所在目录
 PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
