@@ -1,4 +1,3 @@
-import logging
 from astrbot.api.all import *
 from astrbot.api.event.filter import command
 import json
@@ -7,11 +6,8 @@ import random
 from datetime import datetime, timedelta
 from typing import Dict, List
 
-logger = logging.getLogger("CS2BoxPlugin")
-
-# 获取插件所在目录
-PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
-USER_DATA_DIR = os.path.join(PLUGIN_DIR, "user_data")
+# 获取数据存储目录（独立于插件目录）
+USER_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../", "../", "cs2box_data"))
 os.makedirs(USER_DATA_DIR, exist_ok=True)
 
 # 武器箱数据结构
@@ -365,7 +361,7 @@ def _format_pending_items(items: List[Dict]) -> str:
 
 def _add_gold_info(message: str, gold: int) -> str:
     """在消息末尾添加金币信息"""
-    return f"{message}\n当前金币：{gold}"
+    return f"{message}\n💰 当前金币：{gold}"
 
 @register("CS2BoxPlugin", "Kimi", "CS2开箱模拟系统", "1.0.0")
 class CS2BoxPlugin(Star):
@@ -380,7 +376,7 @@ class CS2BoxPlugin(Star):
         
         today = get_today()
         if user_data["last_checkin"] == today:
-            yield event.plain_result(_add_gold_info("⚠️ 今天已经签到过了，请明天再来", user_data["gold"]))
+            yield event.plain_result(_add_gold_info("⏰ 今天已经签到过了，请明天再来", user_data["gold"]))
             return
         
         user_data["gold"] += 100
@@ -392,7 +388,7 @@ class CS2BoxPlugin(Star):
     async def open_case(self, event: AstrMessageEvent, case_name: str = None, count: int = 1):
         """开箱功能"""
         if case_name is None:
-            case_list = "当前箱子：\n" + "\n".join(
+            case_list = "📦 当前箱子：\n" + "\n".join(
                 f"{idx}. {case}" for idx, case in enumerate(WEAPON_CASES.keys(), 1)
             )
             help_msg = f"{case_list}\n\n请输入【开箱 箱子名称 数量】开箱\n示例：开箱 梦魇武器箱 1"
@@ -442,7 +438,7 @@ class CS2BoxPlugin(Star):
         _save_user_data(event, user_data)
 
         result_msg = f"🎁 开箱结果：\n{_format_pending_items(results)}\n\n"
-        result_msg += "回复【出售 全部】或【保留全部】处理物品\n或使用【出售 编号】处理单个物品（例：出售 1 3）"
+        result_msg += "💡 回复【出售 全部】或【保留全部】处理物品\n或使用【出售 编号】处理单个物品（例：出售 1 3）"
         
         yield event.plain_result(_add_gold_info(result_msg, user_data["gold"]))
 
@@ -453,7 +449,7 @@ class CS2BoxPlugin(Star):
         items = user_data["pending_items"]
         
         if not items:
-            yield event.plain_result(_add_gold_info("⚠️ 没有待处理的物品", user_data["gold"]))
+            yield event.plain_result(_add_gold_info("📦 没有待处理的物品", user_data["gold"]))
             return
 
         args = event.message_str.strip().split()[1:]  # 获取出售后面的参数
@@ -482,8 +478,8 @@ class CS2BoxPlugin(Star):
             _save_user_data(event, user_data)
             
             msg = f"💰 出售成功！获得 ￥{total:.2f}金币\n\n"
-            msg += f"剩余物品：\n{_format_pending_items(remaining_items)}\n\n"
-            msg += "可以继续选择出售或回复【保留全部】"
+            msg += f"📦 剩余物品：\n{_format_pending_items(remaining_items)}\n\n"
+            msg += "💡 可以继续选择出售或回复【保留全部】"
             yield event.plain_result(_add_gold_info(msg, user_data["gold"]))
             
         except Exception as e:
@@ -496,7 +492,7 @@ class CS2BoxPlugin(Star):
         user_data = _load_user_data(event)
         
         if not user_data["pending_items"]:
-            yield event.plain_result(_add_gold_info("⚠️ 没有待处理的物品", user_data["gold"]))
+            yield event.plain_result(_add_gold_info("📦 没有待处理的物品", user_data["gold"]))
             return
 
         for item in user_data["pending_items"]:
@@ -505,7 +501,7 @@ class CS2BoxPlugin(Star):
         
         user_data["pending_items"] = []
         _save_user_data(event, user_data)
-        yield event.plain_result(_add_gold_info("📦 所有物品已存入背包", user_data["gold"]))
+        yield event.plain_result(_add_gold_info("🎒 所有物品已存入背包", user_data["gold"]))
 
     @command("背包")
     async def show_inventory(self, event: AstrMessageEvent):
@@ -545,7 +541,7 @@ class CS2BoxPlugin(Star):
             f"{idx}. {item['name']} x{item['count']} 价值：￥{item['price']:.2f}"
             for idx, item in enumerate(inventory_items, 1)
         )
-        msg += "\n\n使用【背包出售 全部】出售所有物品\n或【背包出售 编号】出售指定物品"
+        msg += "\n\n💡 使用【背包出售 全部】出售所有物品\n或【背包出售 编号】出售指定物品"
         yield event.plain_result(_add_gold_info(msg, user_data["gold"]))
 
     @command("背包出售")
@@ -616,7 +612,7 @@ class CS2BoxPlugin(Star):
         group_dir = os.path.join(USER_DATA_DIR, f"group_{current_group}")
         
         if not os.path.exists(group_dir):
-            yield event.plain_result(_add_gold_info("当前群组还没有任何开箱数据哦~", _load_user_data(event)["gold"]))
+            yield event.plain_result(_add_gold_info("🏆 当前群组还没有任何开箱数据哦~", _load_user_data(event)["gold"]))
             return
 
         user_files = [f for f in os.listdir(group_dir) if f.endswith('.json')]
@@ -666,7 +662,7 @@ class CS2BoxPlugin(Star):
             )
         
         rank_msg.append("=================================")
-        rank_msg.append(f"使用【排行 页码】查看其他页面")
+        rank_msg.append(f"💡 使用【排行 页码】查看其他页面")
         
         # 获取当前用户金币信息
         current_user_data = _load_user_data(event)
